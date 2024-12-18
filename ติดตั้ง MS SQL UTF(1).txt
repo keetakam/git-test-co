@@ -1,0 +1,73 @@
+﻿การ install โปรแกรม
+-----------------------------------------------
+1. ติดตั้ง dotNetFx40_Full_setup.exe (ถ้า มี.netfarmwork อยู่แล้วไม่ต้อง install)...(ไม่จำเป็นต้องทำก็ได้) 
+2. ที่แผน cd ชื่อ SQL Server 2014 Fpo-Fds (SQL2014_ENU_x64) ให้ run setup.exe
+3. เลือก installation ที่  panel ด้าน ซ้าย
+4 .กด  New SQL Server stand-alone or add features to an exsting installation
+5.ใส่  P7FRV-Y6x6Y-Y8C6Q-TB4QR-DMTTK กด Next 
+6. ถ้าติด  warning ที่ .NET ให้ไป  https://crl.microsoft.com/pki/crl/products/MicrosofttRootAuthority.crl (ข้ามไปก่อน)
+  ถ้าติด  warning ที่ windows Firewall ให้ไปปิด  windows Firewall ก่อนแล้วกด re-run
+7.เลือก SQL Server Feature Installation กด Next  
+8. คลิกปุ่ม Select All กด Next  
+9. เลือก Default instance กด Next 
+10.หน้าต่าง Server Configuration Tab Collation ใหเเปลี่ยน Database Engine และ Analysis Service เป็น Thai_CI_AS 
+    ถ้าหากแก้ไม่ได้ ให้ไปที่ Region ของ WINDOW ณ Administrative ให้เปลี่ยน Current language for non-Unicode program เป็น Thai(Thailand) 
+11.หน้าต่าง Database Engine Configuration ให้ป้อน Password ของ Sa สาหรับ Login (p@ss) 
+   แล้วกดปุ่ม Add Current User(หาก Userเป็น Admin อยู่แล้ว 
+   ถ้าไม่ใช้ให้กดปุ่ม  Add แล้วเลือก user ที่เป็น Admin ) กด Next 
+12.กด Next (server configuration ไม่มีแจ้งเตื่อน )
+13.เลือก Install and Configure กด Next 
+14.กด Next 
+15.กด Next 
+16.กด install
+17.Complete เสร็จสิ้นการติดตั้งโปรแกรม Microsoft SQL Server 2014 จากนั้นคลิกปุ่ม Close
+
+ทดสอบโปรแกรม
+-----------------------------------------------
+1.start -> All Programs -> Microsoft SQL Server 2014 -> SQL Server 2014 Management Studio
+2.login = sa Password = p@ss กด conect 
+
+PHP ติดตั้งตัวเชื่อมต่อฐานข้อมูล SQL Server
+----------------------------------------------
+1.คลิกไฟล์ SQLSRV32.exe 
+หรือโหลดได้ใหม่ที่ www.microsoft.com/en-us/download/details.aspx?id=20098
+โดยให้โหลดตามเวอร์ชั่น PHP ดังนี้
+Version 4.0 supports PHP 7
+Version 3.2 supports PHP 5.6, 5.5, and 5.4
+Version 3.1 supports PHP 5.5 and 5.4
+Version 3.0 supports PHP 5.4
+2. ติดตั้งที่ C:\xampp\php\ext กด yes
+3.เปิด   extension = php_sqlsrv_55_ts.dll ในไฟล์ php.ini
+
+การคัดลอก DATA
+-------------------------------------------------------
+1.ปิด service sql server ต้นทาง
+2.คัดลอก ไฟล์  dpd และ  dpd_logใน foder C:\Program Files\Microsoft SQL Server\MSSQL12.MSSQLSERVER\MSSQL\DATA ไปไว้ที่ sql server ปลายทาง 
+3.เปิดโปรแกรม SQL Server 2014 คลิกขว้า Database เลือก Attach... 
+4.กด add เลือก  dpd.mdf กด  ok กด  ok
+
+ติดตั้ง www.dpd
+------------------------------------------------------
+1. copy floder ชื่อ dpd ไปไว้ที่ web root เพื่อสามารถเรียก localhost/dpd
+2. สร้าง c:Project/logs/dpd และ c:Project/logs/dpd_uat
+
+แก้ไข code php เดิมให้ทำงานได้ดีขึ้น ไม่มี ERROR
+------------------------------------------------------
+1. กรณีอยากตั้ง floder ครอบ ให้แก้ .htacsess จาก RewriteBase /dpd  เป็น RewriteBase /FIDP_4DB/dpd
+1. หาที่มาของ ERROR ต่างได้จากกการ comment บรรทัด set_error_handler("err_handler");
+2.  แก้  AuthenUtils.class.php โดย เปลี่ยนจาก public function get_anonymous()  เป็น public static function get_anonymous()
+3. ตามแก้ไข ERROR  Strict Standards: Only variables should be passed by reference ตามบรรทัดต่างๆ โดยกำหนดตัวแปรมารองรับค่าจาก fuction() หนึ่ง ที่จะป้อนให้อีก fuction() หนึ่งก่อน
+4. แก้  MssqlDialect.class.php โดย เพิ่ม
+   $dsn="DRIVER={SQL Server};SERVER=172.16.10.67;DATABASE=dpd;AutoTranslate=no";  --> หรือจะแก้ที่ conf.xml ก็ได้
+   $password='p@ss';
+  (เวลาใช้งานจริงให้เอาออกหรือแก้ค่าคืนก่อนขึ้น server)
+------------------------------------------------------
+Set Server Objects ใน Microsoft SQL Server
+1. ทำการ Connect VPN ผ่าน FortiClient 
+1. เลือก menu Server Objects จากนั้นคลิกขวาที่คำสั่ง Linked Servers เลือก New - > Linked Server
+2. หน้าต่าง New Linked Server ในหัวข้อ General จะมีช่อง Linked Server ให้กรอกข้อมูล ดังนี้ 164.115.61.50 และ Server Type เลือก SQL Server
+3. หน้าต่าง New Linked Server ในหัวข้อ Security ให้เลือก Be made using this security context จากนั้นกรอกข้อมูล ดังนี้
+3.1 หัวข้อ Remote login : fidp
+3.2 หัวข้อ With password : qwER1234!@#$
+
+
